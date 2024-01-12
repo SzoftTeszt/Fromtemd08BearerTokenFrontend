@@ -51,7 +51,7 @@ export class AppComponent {
   }
   getUsers(){
 
-    this.base.getUsers().subscribe(
+    this.auth.getUsers().subscribe(
       (res)=> {
         this.users=res
         for (const iterator of this.users) {
@@ -67,7 +67,5 @@ export class AppComponent {
       (res)=> this.companies=res
     )
   }
-  evryRoles(){
-    this.auth.evryRoles().subscribe()
-  }
+  
 }
