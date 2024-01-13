@@ -26,6 +26,7 @@ export class AppComponent {
 
   users:any=[]
   companies:any=[]
+  roles=["User", "Admin","SAdmin"]
   constructor(private base:BaseService, private auth:AuthService){
 
   }
@@ -39,16 +40,9 @@ export class AppComponent {
     )
   }
   signIn(){
-    this.auth.signIn(this.loginModel).subscribe(
-      {
-        next: (res)=>{
-          localStorage.setItem("token",res)
-          console.log("Login:", res)
-      },
-        error: (res)=> console.log("Login Hiba:", res)
-      }
-    )
+    this.auth.signIn(this.loginModel)
   }
+  
   getUsers(){
 
     this.auth.getUsers().subscribe(
@@ -56,7 +50,12 @@ export class AppComponent {
         this.users=res
         for (const iterator of this.users) {
             this.auth.getRoles(iterator.id).subscribe(
-              (res)=>{iterator.roles=res}
+              (res)=>{
+                console.log("Roles",res)
+                if (res instanceof Array)
+                    iterator.roles=res
+                else iterator.roles=[]
+              }
             )
         }
       }
@@ -67,5 +66,14 @@ export class AppComponent {
       (res)=> this.companies=res
     )
   }
-  
+  logout(){
+    this.auth.logout()
+  }
+  roleChange(user:any,role:any){
+      if (user.roles.includes(role)){
+        user.roles=user.roles.filter((r:any)=>r != role)
+      }
+      else user.roles.push(role)
+      this.auth.setRoles(user.id, user.roles).subscribe()
+  }
 }
